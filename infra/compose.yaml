@@ -2,8 +2,8 @@ services:
   database:
     image: 'postgres:16.11-alpine3.23'
     environment:
-      POSTGRES_USER: 'myuser'
+      POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'local_password'
-      POSTGRES_DB: 'mydatabase'
+      POSTGRES_DB: 'tabnews_clone'
     ports:
       - '5432:5432'
