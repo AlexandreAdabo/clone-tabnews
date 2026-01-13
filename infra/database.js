@@ -10,9 +10,7 @@ async function query(queryText, params) {
   });
   await client.connect();
 
-  const res = await client.query(queryText || 'SELECT $1::text as message', [
-    'Hello world!',
-  ]);
+  const res = await client.query(queryText || 'SELECT $1::text as message', params);
   await client.end();
   return res.rows;
 }
