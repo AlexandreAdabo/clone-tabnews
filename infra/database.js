@@ -9,10 +9,14 @@ async function query(queryText, params) {
     password: process.env.POSTGRES_PASSWORD,
   });
   await client.connect();
-
-  const res = await client.query(queryText || 'SELECT $1::text as message', params);
-  await client.end();
-  return res.rows;
+  try {
+    const res = await client.query(queryText || 'SELECT $1::text as message', params);
+    return res.rows;
+  } catch (error) {
+    console.error('Database query error:', error);
+  } finally {
+    await client.end();
+  }
 }
 
 export default {
