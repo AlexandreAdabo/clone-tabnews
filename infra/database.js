@@ -8,12 +8,19 @@ async function query(queryText, params) {
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
   });
-  await client.connect();
+  console.log('Database connection parameters:', {
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    user: process.env.POSTGRES_USER,
+    database: process.env.POSTGRES_DB,
+  });
   try {
+    await client.connect();
     const res = await client.query(queryText || 'SELECT $1::text as message', params);
     return res.rows;
   } catch (error) {
     console.error('Database query error:', error);
+    throw error;
   } finally {
     await client.end();
   }
