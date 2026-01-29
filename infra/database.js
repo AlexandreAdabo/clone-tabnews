@@ -1,16 +1,9 @@
 import { Client } from 'pg';
 
 async function query(queryText, params) {
-  const client = new Client({
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    user: process.env.POSTGRES_USER,
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
-    ssl: process.env.POSTGRES_SSL === 'development' ? false : true,
-  });
+  let client
   try {
-    await client.connect();
+    client = await getNewClient();
     const res = await client.query(queryText || 'SELECT $1::text as message', params);
     return res.rows;
   } catch (error) {
@@ -21,6 +14,21 @@ async function query(queryText, params) {
   }
 }
 
+async function getNewClient(){
+  const client = new Client({
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    user: process.env.POSTGRES_USER,
+    database: process.env.POSTGRES_DB,
+    password: process.env.POSTGRES_PASSWORD,
+    ssl: process.env.POSTGRES_SSL === 'production' ? true : false,
+  });
+
+  await client.connect();
+  return client;
+}
+
 export default {
   query,
+  getNewClient
 };
