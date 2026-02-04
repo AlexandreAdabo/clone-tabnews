@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */ 
-/* eslint-disable camelcase */ 
+/* eslint-disable no-unused-vars */
+/* eslint-disable camelcase */
 
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
