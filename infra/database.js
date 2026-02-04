@@ -1,10 +1,13 @@
 import { Client } from 'pg';
 
 async function query(queryText, params) {
-  let client
+  let client;
   try {
     client = await getNewClient();
-    const res = await client.query(queryText || 'SELECT $1::text as message', params);
+    const res = await client.query(
+      queryText || 'SELECT $1::text as message',
+      params
+    );
     return res.rows;
   } catch (error) {
     console.error('Database query error:', error);
@@ -14,7 +17,7 @@ async function query(queryText, params) {
   }
 }
 
-async function getNewClient(){
+async function getNewClient() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
@@ -30,5 +33,5 @@ async function getNewClient(){
 
 export default {
   query,
-  getNewClient
+  getNewClient,
 };

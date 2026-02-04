@@ -1,5 +1,5 @@
-import orchestrator from "../orchestrator.js";
-import database from "infra/database";
+import orchestrator from '../orchestrator.js';
+import database from 'infra/database';
 
 beforeAll(async () => {
   await cleanDatabase();
@@ -10,12 +10,14 @@ async function cleanDatabase() {
   await database.query(`drop schema public cascade; create schema public;`);
 }
 
-
 test('GET /api/v1/status should return 200', async () => {
   const response = await fetch('http://localhost:3000/api/v1/status');
   expect(response.status).toBe(200);
   const data = await response.json();
-  console.log(JSON.stringify(data.dependencies.database), 'data.dependencies.database')
+  console.log(
+    JSON.stringify(data.dependencies.database),
+    'data.dependencies.database'
+  );
   expect(data.updated_at).toBeDefined();
   expect(data.dependencies.database.max_connections).toBeDefined();
   expect(data.dependencies.database.db_version).toBeDefined();
