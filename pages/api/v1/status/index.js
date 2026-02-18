@@ -1,8 +1,14 @@
-import { InternalServerError } from 'infra/errors';
+import { createRouter } from 'next-connect';
 import database from '/infra/database.js';
+import controller from 'infra/controller';
 
-async function status(req, res) {
-  try {
+const router = createRouter();
+
+router.get(getHandler);
+
+export default router.handler(controller.errorHandlers);
+
+async function getHandler(req, res) {
     const [db_version] = await database.query(`SHOW server_version;`);
     const [max_connections] = await database.query(`SHOW max_connections;`);
     const [used_connections] = await database.query({
@@ -20,14 +26,4 @@ async function status(req, res) {
         },
       },
     });
-  } catch (error) {
-    const publicErrorObject = new InternalServerError({
-      cause: error,
-    });
-    console.log('\n Erro dentro do catch do controller:');
-    console.error(publicErrorObject);
-    res.status(500).json(publicErrorObject);
-  }
 }
-
-export default status;
