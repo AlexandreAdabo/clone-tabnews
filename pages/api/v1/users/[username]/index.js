@@ -2,7 +2,6 @@ import controller from 'infra/controller';
 import user from 'models/user';
 import { createRouter } from 'next-connect';
 
-
 const router = createRouter();
 
 router.get(getHandler);
