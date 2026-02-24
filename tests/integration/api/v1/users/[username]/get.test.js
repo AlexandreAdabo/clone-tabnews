@@ -12,10 +12,10 @@ describe('GET /api/v1/users/[username]', () => {
   describe('Anonymous user', () => {
     test('With exact case match', async () => {
       await orchestrator.createUser({
-          username: 'MesmoCase',
-          email: 'mesmo.case@gmail.com',
-          password: 'senha123',
-      })
+        username: 'MesmoCase',
+        email: 'mesmo.case@gmail.com',
+        password: 'senha123',
+      });
 
       const response2 = await fetch(
         'http://localhost:3000/api/v1/users/MesmoCase'
@@ -41,7 +41,7 @@ describe('GET /api/v1/users/[username]', () => {
         username: 'CaseDiferente',
         email: 'case.diferente@gmail.com',
         password: 'senha123',
-      })
+      });
       const response2 = await fetch(
         'http://localhost:3000/api/v1/users/casediferente'
       );
