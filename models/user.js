@@ -37,24 +37,24 @@ async function create(userInputValues) {
   return newUser;
 }
 
-async function update(username, userInputValues){
+async function update(username, userInputValues) {
   const currentUser = await findOneByUsername(username);
-  if("username" in userInputValues) {
+  if ('username' in userInputValues) {
     await validateUniqueUsername(userInputValues.username);
   }
 
-  if("email" in userInputValues) {
+  if ('email' in userInputValues) {
     await validateUniqueEmail(userInputValues.email);
   }
 
-  if("password" in userInputValues) {
+  if ('password' in userInputValues) {
     await hashPasswordInObject(userInputValues);
   }
 
-  const userWithNewValues = { ...currentUser, ...userInputValues }
+  const userWithNewValues = { ...currentUser, ...userInputValues };
 
   const updatedUser = await runUpdateQuery(userWithNewValues);
-  return updatedUser
+  return updatedUser;
 }
 
 async function runUpdateQuery(userWithNewValues) {
@@ -77,10 +77,10 @@ async function runUpdateQuery(userWithNewValues) {
       userWithNewValues.username,
       userWithNewValues.email,
       userWithNewValues.password,
-    ]
-  })
+    ],
+  });
 
-  return results[0]
+  return results[0];
 }
 
 async function validateUniqueEmail(email) {
@@ -149,7 +149,7 @@ async function runInsertQuery(userInputValues) {
 const user = {
   create,
   findOneByUsername,
-  update
+  update,
 };
 
 export default user;
