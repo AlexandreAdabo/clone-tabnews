@@ -3,6 +3,7 @@ const {
   InternalServerError,
   ValidationError,
   NotFoundError,
+  UnauthorizedError,
 } = require('./errors');
 
 function onNoMatchHandler(req, res) {
@@ -11,12 +12,15 @@ function onNoMatchHandler(req, res) {
 }
 
 function onErrorHandler(error, req, res) {
-  if (error instanceof ValidationError || error instanceof NotFoundError) {
+  if (
+    error instanceof ValidationError ||
+    error instanceof NotFoundError ||
+    error instanceof UnauthorizedError
+  ) {
     return res.status(error.statusCode).json(error);
   }
 
   const publicErrorObject = new InternalServerError({
-    statusCode: error.statusCode,
     cause: error,
   });
   console.error(publicErrorObject);
