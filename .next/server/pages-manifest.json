@@ -3,5 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/api/v1/sessions": "pages/api/v1/sessions.js"
+  "/api/v1/status": "pages/api/v1/status.js",
+  "/api/v1/user": "pages/api/v1/user.js"
 }

@@ -1,10 +1,61 @@
 import database from 'infra/database';
 import password from './password';
-import { NotFoundError, ValidationError } from 'infra/errors';
+import {
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from 'infra/errors';
+
+async function findOneById(userId) {
+  const userFound = await runSelectQuery(userId);
+  return userFound;
+  async function runSelectQuery(userId) {
+    const results = await database.query({
+      text: `SELECT
+                  * 
+                FROM 
+                  users 
+                WHERE 
+                  id = $1
+                LIMIT
+                  1
+          ;`,
+      values: [userId],
+    });
+    if (results.length === 0) {
+      throw new UnauthorizedError({
+        message: 'Usuário não possui uma sessão ativa.',
+        action: 'Verifique se o usuário está logado e tente novamente.',
+      });
+    }
+    return results[0];
+  }
+}
 
 async function findOneByUsername(username) {
   const userFound = await runSelectQuery(username);
   return userFound;
+  async function runSelectQuery(username) {
+    const results = await database.query({
+      text: `SELECT
+                  * 
+                FROM 
+                  users 
+                WHERE 
+                  LOWER(username) = LOWER($1)
+                LIMIT
+                  1
+          ;`,
+      values: [username],
+    });
+    if (results.length === 0) {
+      throw new NotFoundError({
+        message: 'O username informado não foi encontrado no sistema.',
+        action: 'Verifique se o username está digitado corretamente.',
+      });
+    }
+    return results[0];
+  }
 }
 
 async function findOneByEmail(email) {
@@ -33,28 +84,6 @@ async function findOneByEmail(email) {
   }
 
   return userFound;
-}
-
-async function runSelectQuery(username) {
-  const results = await database.query({
-    text: `SELECT
-                * 
-              FROM 
-                users 
-              WHERE 
-                LOWER(username) = LOWER($1)
-              LIMIT
-                1
-        ;`,
-    values: [username],
-  });
-  if (results.length === 0) {
-    throw new NotFoundError({
-      message: 'O username informado não foi encontrado no sistema.',
-      action: 'Verifique se o username está digitado corretamente.',
-    });
-  }
-  return results[0];
 }
 
 async function create(userInputValues) {
@@ -176,6 +205,7 @@ async function runInsertQuery(userInputValues) {
 
 const user = {
   create,
+  findOneById,
   findOneByUsername,
   findOneByEmail,
   update,
