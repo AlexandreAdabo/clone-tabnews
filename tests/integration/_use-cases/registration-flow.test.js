@@ -1,4 +1,6 @@
-import orchestrator from '../orchestrator';
+import activation from 'models/activation';
+import orchestrator from '../../integration/api/v1/orchestrator';
+import webserver from 'infra/webserver';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -9,6 +11,7 @@ beforeAll(async () => {
 });
 
 describe('Use case: Registration Flow (all successful)', () => {
+    let createUserResponseBody; 
     test('Create user account', async () => {
         const response = await fetch('http://localhost:3000/api/v1/users', {
             method: 'POST',
@@ -22,194 +25,40 @@ describe('Use case: Registration Flow (all successful)', () => {
             }),
           });
           expect(response.status).toBe(201);
-          const responseBody = await response.json();
-          expect(responseBody).toEqual({
-            id: responseBody.id,
-            username: 'RegistrationFlowPassword',
+          createUserResponseBody = await response.json();
+          expect(createUserResponseBody).toEqual({
+            id: createUserResponseBody.id,
+            username: 'RegistrationFlow',
             email: 'registration.flow@gmail.com',
             features: ['read:activation_token'],
-            password: responseBody.password,
-            created_at: responseBody.created_at,
-            updated_at: responseBody.updated_at,
+            password: createUserResponseBody.password,
+            created_at: createUserResponseBody.created_at,
+            updated_at: createUserResponseBody.updated_at,
           });
     });
 
     test('Receive activation email', async () => {
-      jest.useFakeTimers({
-        now: new Date(Date.now() - session.EXPIRATION_IN_MILISECONDS),
-      });
+      const lastEmail = await orchestrator.getLastEmail();
 
-      const createdUser = await orchestrator.createUser({
-        username: 'UserWithExpiredSession',
-      });
+      expect(lastEmail.sender).toBe('<contato@fintab.com.br>');
+      expect(lastEmail.recipients[0]).toBe('<registration.flow@gmail.com>');
+      expect(lastEmail.subject).toBe('Ative seu cadastro no FinTab!');
+      expect(lastEmail.text).toContain('RegistrationFlow');
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const activationTokenId = orchestrator.extractUUID(lastEmail.text);
+      expect(lastEmail.text).toContain(`${webserver.origin}/cadastro/ativar/${activationTokenId}`);
 
-      jest.useRealTimers();
-
-      const response = await fetch('http://localhost:3000/api/v1/sessions', {
-        method: 'DELETE',
-        headers: {
-          Cookie: `session_id=${sessionObject.token}`,
-        },
-      });
-      expect(response.status).toBe(401);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        name: 'UnauthorizedError',
-        message: 'Usuário não possui uma sessão ativa.',
-        action: 'Verifique se o usuário está logado e tente novamente.',
-        status_code: 401,
-      });
+      const activationTokenObject = await activation.findOneValidById(activationTokenId);
+      expect(activationTokenObject.user_id).toBe(createUserResponseBody.id);
+      expect(activationTokenObject.used_at).toBe(null);
     });
 
     test('Activate account', async () => {
-      const createdUser = await orchestrator.createUser({
-        username: 'UserWithValidSession',
-      });
-
-      const sessionObject = await orchestrator.createSession(createdUser.id);
-
-      const response = await fetch('http://localhost:3000/api/v1/sessions', {
-        method: 'DELETE',
-        headers: {
-          Cookie: `session_id=${sessionObject.token}`,
-        },
-      });
-      expect(response.status).toBe(200);
-
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        id: sessionObject.id,
-        token: sessionObject.token,
-        user_id: sessionObject.user_id,
-        expires_at: responseBody.expires_at,
-        created_at: responseBody.created_at,
-        updated_at: responseBody.updated_at,
-      });
-      expect(uuidVersion(responseBody.id)).toBe(4);
-      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
-      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-
-      // Session renewal assertions
-      expect(
-        responseBody.expires_at < sessionObject.expires_at.toISOString()
-      ).toEqual(true);
-      expect(
-        responseBody.updated_at > sessionObject.updated_at.toISOString()
-      ).toEqual(true);
-
-      // Set-Cookie assertions
-      const parsedSetCookie = setCookieParsers(response, {
-        map: true,
-      });
-
-      expect(parsedSetCookie.session_id).toEqual({
-        name: 'session_id',
-        value: 'invalid',
-        maxAge: -1,
-        path: '/',
-        httpOnly: true,
-      });
     });
 
     test('Login', async () => {
-        const createdUser = await orchestrator.createUser({
-          username: 'UserWithValidSession',
-        });
-  
-        const sessionObject = await orchestrator.createSession(createdUser.id);
-  
-        const response = await fetch('http://localhost:3000/api/v1/sessions', {
-          method: 'DELETE',
-          headers: {
-            Cookie: `session_id=${sessionObject.token}`,
-          },
-        });
-        expect(response.status).toBe(200);
-  
-        const responseBody = await response.json();
-        expect(responseBody).toEqual({
-          id: sessionObject.id,
-          token: sessionObject.token,
-          user_id: sessionObject.user_id,
-          expires_at: responseBody.expires_at,
-          created_at: responseBody.created_at,
-          updated_at: responseBody.updated_at,
-        });
-        expect(uuidVersion(responseBody.id)).toBe(4);
-        expect(Date.parse(responseBody.created_at)).not.toBeNaN();
-        expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-  
-        // Session renewal assertions
-        expect(
-          responseBody.expires_at < sessionObject.expires_at.toISOString()
-        ).toEqual(true);
-        expect(
-          responseBody.updated_at > sessionObject.updated_at.toISOString()
-        ).toEqual(true);
-  
-        // Set-Cookie assertions
-        const parsedSetCookie = setCookieParsers(response, {
-          map: true,
-        });
-  
-        expect(parsedSetCookie.session_id).toEqual({
-          name: 'session_id',
-          value: 'invalid',
-          maxAge: -1,
-          path: '/',
-          httpOnly: true,
-        });
     });
 
     test('Get user information', async () => {
-        const createdUser = await orchestrator.createUser({
-          username: 'UserWithValidSession',
-        });
-  
-        const sessionObject = await orchestrator.createSession(createdUser.id);
-  
-        const response = await fetch('http://localhost:3000/api/v1/sessions', {
-          method: 'DELETE',
-          headers: {
-            Cookie: `session_id=${sessionObject.token}`,
-          },
-        });
-        expect(response.status).toBe(200);
-  
-        const responseBody = await response.json();
-        expect(responseBody).toEqual({
-          id: sessionObject.id,
-          token: sessionObject.token,
-          user_id: sessionObject.user_id,
-          expires_at: responseBody.expires_at,
-          created_at: responseBody.created_at,
-          updated_at: responseBody.updated_at,
-        });
-        expect(uuidVersion(responseBody.id)).toBe(4);
-        expect(Date.parse(responseBody.created_at)).not.toBeNaN();
-        expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-  
-        // Session renewal assertions
-        expect(
-          responseBody.expires_at < sessionObject.expires_at.toISOString()
-        ).toEqual(true);
-        expect(
-          responseBody.updated_at > sessionObject.updated_at.toISOString()
-        ).toEqual(true);
-  
-        // Set-Cookie assertions
-        const parsedSetCookie = setCookieParsers(response, {
-          map: true,
-        });
-  
-        expect(parsedSetCookie.session_id).toEqual({
-          name: 'session_id',
-          value: 'invalid',
-          maxAge: -1,
-          path: '/',
-          httpOnly: true,
-        });
     });
 });
