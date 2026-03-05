@@ -145,7 +145,7 @@ describe('POST /api/v1/users', () => {
         }),
       });
       expect(user2Response.status).toBe(403);
-      const user2ResponseBody = await response.json();
+      const user2ResponseBody = await user2Response.json();
       expect(user2ResponseBody).toEqual({
         name: 'ForbiddenError',
         message: "Você não possui permissão para executar esta ação.",
