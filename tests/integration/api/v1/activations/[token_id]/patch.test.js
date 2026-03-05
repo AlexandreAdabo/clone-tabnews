@@ -7,9 +7,7 @@ import user from 'models/user.js';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('PATCH /api/v1/activations/[token_id]', () => {
@@ -164,3 +162,4 @@ describe('PATCH /api/v1/activations/[token_id]', () => {
    });
   })
 });
+

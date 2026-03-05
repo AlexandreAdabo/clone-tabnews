@@ -5,9 +5,7 @@ import session from 'models/session.js';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('POST /api/v1/sessions', () => {
@@ -145,3 +143,4 @@ describe('POST /api/v1/sessions', () => {
     });
   });
 });
+

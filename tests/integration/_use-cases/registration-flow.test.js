@@ -5,9 +5,7 @@ import user from 'models/user';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
   await orchestrator.deleteAllEmails();
 });
 
@@ -111,3 +109,4 @@ describe('Use case: Registration Flow (all successful)', () => {
       });
     });
 });
+

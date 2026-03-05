@@ -5,9 +5,7 @@ import setCookieParsers from 'set-cookie-parser';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('GET /api/v1/user', () => {
@@ -163,3 +161,4 @@ describe('GET /api/v1/user', () => {
     });
   });
 });
+

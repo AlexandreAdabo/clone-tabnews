@@ -3,9 +3,7 @@ import orchestrator from '../../orchestrator';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('GET /api/v1/users/[username]', () => {
@@ -79,3 +77,4 @@ describe('GET /api/v1/users/[username]', () => {
     });
   });
 });
+

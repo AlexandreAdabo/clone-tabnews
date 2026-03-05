@@ -5,9 +5,7 @@ import password from 'models/password';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('POST /api/v1/users', () => {
@@ -155,3 +153,4 @@ describe('POST /api/v1/users', () => {
     });
   });
 });
+

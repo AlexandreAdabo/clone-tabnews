@@ -7,7 +7,6 @@ beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('DELETE /api/v1/sessions', () => {
@@ -112,3 +111,4 @@ describe('DELETE /api/v1/sessions', () => {
     });
   });
 });
+
