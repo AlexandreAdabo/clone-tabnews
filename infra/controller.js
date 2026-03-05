@@ -1,4 +1,5 @@
 import * as cookie from 'cookie';
+import authorization from 'models/authorization';
 import session from 'models/session';
 import user from 'models/user';
 
@@ -88,7 +89,7 @@ function canRequest(feature) {
     return function canRequestMiddleware(req, res, next){
       const useTryingToRequest = req.context.user;
 
-      if(useTryingToRequest.features.includes(feature)){
+      if(authorization.can(useTryingToRequest, feature)){
         return next();
       }
 
