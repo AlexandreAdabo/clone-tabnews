@@ -1,8 +1,9 @@
 import database from "infra/database";
 import email from "infra/email"
-import { NotFoundError } from "infra/errors";
+import { ForbiddenError, NotFoundError } from "infra/errors";
 import webserver from "infra/webserver";
 import user from "./user";
+import authorization from "./authorization";
 
 const EXPIRATION_IN_MILISECONDS = 60 * 15 * 1000 // 15 Minutos
 
@@ -70,7 +71,16 @@ async function markTokenAsUsed(activationTokenId) {
 }
 
 async function activateUserByUserId(userId) {
-    const activatedUser = await user.setFeatures(userId, ["create:session"]);
+    const userToActivate = await user.findOneById(userId);
+
+    if(!authorization.can(userToActivate, "read:activation_token")){
+        throw new ForbiddenError({
+            message: "Você não pode mais utilizar tokens de ativação.",
+            action: "Entre em contato com o suporte",
+        })
+    }
+
+    const activatedUser = await user.setFeatures(userId, ["create:session", "read:session"]);
     return activatedUser;
 }
 
@@ -112,6 +122,7 @@ Equipe FinTab
 }
 
 const activation = {
+    EXPIRATION_IN_MILISECONDS,
     findOneValidById,
     markTokenAsUsed,
     activateUserByUserId,
