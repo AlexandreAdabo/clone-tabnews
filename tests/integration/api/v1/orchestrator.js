@@ -20,7 +20,7 @@ async function waitForAllServices() {
     });
 
     async function fetchStatusPage() {
-      const response = await fetch("http://localhost:3000/api/v1/status");
+      const response = await fetch('http://localhost:3000/api/v1/status');
 
       if (response.status !== 200) {
         throw Error();
@@ -75,7 +75,7 @@ async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
   const emailListBody = await emailListResponse.json();
   const lastEmailItem = emailListBody.pop();
-  if(!lastEmailItem){
+  if (!lastEmailItem) {
     return null;
   }
   const emailTextResponse = await fetch(
@@ -86,16 +86,16 @@ async function getLastEmail() {
   return lastEmailItem;
 }
 
-function extractUUID(text){
+function extractUUID(text) {
   const match = text.match(/[0-9a-fA-F-]{36}/);
   return match ? match[0] : null;
 }
 
-async function activateUser(inactiveUser){
+async function activateUser(inactiveUser) {
   return await activation.activateUserByUserId(inactiveUser.id);
-} 
+}
 
-async function addFeaturesToUser(userObject, features){
+async function addFeaturesToUser(userObject, features) {
   const updatedUser = await user.addFeatures(userObject.id, features);
   return updatedUser;
 }
@@ -110,7 +110,7 @@ const orchestrator = {
   getLastEmail,
   extractUUID,
   activateUser,
-  addFeaturesToUser
+  addFeaturesToUser,
 };
 
 export default orchestrator;

@@ -1,17 +1,17 @@
 function getOrigin() {
-    if(["test", "development"].includes(process.env.NODE_ENV)){
-        return "https://localhost:3000";
-    }
+  if (['test', 'development'].includes(process.env.NODE_ENV)) {
+    return 'https://localhost:3000';
+  }
 
-    if(process.env.VERCEL_ENV === "preview"){
-        return `https://${process.env.VERCEL_ENV}`;
-    }
+  if (process.env.VERCEL_ENV === 'preview') {
+    return `https://${process.env.VERCEL_ENV}`;
+  }
 
-    return "https://fintab.com.br";
+  return 'https://fintab.com.br';
 }
 
 const webserver = {
-    origin: getOrigin(),
-}
+  origin: getOrigin(),
+};
 
 export default webserver;

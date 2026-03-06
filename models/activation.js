@@ -1,19 +1,19 @@
-import database from "infra/database";
-import email from "infra/email"
-import { ForbiddenError, NotFoundError } from "infra/errors";
-import webserver from "infra/webserver";
-import user from "./user";
-import authorization from "./authorization";
+import database from 'infra/database';
+import email from 'infra/email';
+import { ForbiddenError, NotFoundError } from 'infra/errors';
+import webserver from 'infra/webserver';
+import user from './user';
+import authorization from './authorization';
 
-const EXPIRATION_IN_MILISECONDS = 60 * 15 * 1000 // 15 Minutos
+const EXPIRATION_IN_MILISECONDS = 60 * 15 * 1000; // 15 Minutos
 
 async function findOneValidById(tokenId) {
-    const activationTokenObject = await runInsertQuery(tokenId);
-    return activationTokenObject;
+  const activationTokenObject = await runInsertQuery(tokenId);
+  return activationTokenObject;
 
-    async function runInsertQuery(tokenId){
-        const results = await database.query({
-            text: `
+  async function runInsertQuery(tokenId) {
+    const results = await database.query({
+      text: `
               SELECT 
                 *
               FROM
@@ -25,27 +25,28 @@ async function findOneValidById(tokenId) {
               LIMIT 
                 1
             ;`,
-            values: [tokenId]
-        });
+      values: [tokenId],
+    });
 
-        if(results.length === 0) {
-            throw new NotFoundError({
-                message: 'O token de ativação utilizado não foi encontrado no sistema ou expirou.',
-                action: 'Faça um novo cadastro',
-            })
-        }
-
-        return results[0];
+    if (results.length === 0) {
+      throw new NotFoundError({
+        message:
+          'O token de ativação utilizado não foi encontrado no sistema ou expirou.',
+        action: 'Faça um novo cadastro',
+      });
     }
+
+    return results[0];
+  }
 }
 
 async function markTokenAsUsed(activationTokenId) {
-    const usedActivationToken = await runInsertQuery(activationTokenId);
-    return usedActivationToken;
+  const usedActivationToken = await runInsertQuery(activationTokenId);
+  return usedActivationToken;
 
-    async function runInsertQuery(activationTokenId){
-        const results = await database.query({
-            text: `
+  async function runInsertQuery(activationTokenId) {
+    const results = await database.query({
+      text: `
               UPDATE
                 user_activation_tokens
               SET 
@@ -56,43 +57,48 @@ async function markTokenAsUsed(activationTokenId) {
               RETURNING 
                 *
             ;`,
-            values: [activationTokenId]
-        });
+      values: [activationTokenId],
+    });
 
-        if(results.length === 0) {
-            throw new NotFoundError({
-                message: 'O token de ativação utilizado não foi encontrado no sistema ou expirou.',
-                action: 'Faça um novo cadastro',
-            })
-        }
-
-        return results[0];
+    if (results.length === 0) {
+      throw new NotFoundError({
+        message:
+          'O token de ativação utilizado não foi encontrado no sistema ou expirou.',
+        action: 'Faça um novo cadastro',
+      });
     }
+
+    return results[0];
+  }
 }
 
 async function activateUserByUserId(userId) {
-    const userToActivate = await user.findOneById(userId);
+  const userToActivate = await user.findOneById(userId);
 
-    if(!authorization.can(userToActivate, "read:activation_token")){
-        throw new ForbiddenError({
-            message: "Você não pode mais utilizar tokens de ativação.",
-            action: "Entre em contato com o suporte",
-        })
-    }
+  if (!authorization.can(userToActivate, 'read:activation_token')) {
+    throw new ForbiddenError({
+      message: 'Você não pode mais utilizar tokens de ativação.',
+      action: 'Entre em contato com o suporte',
+    });
+  }
 
-    const activatedUser = await user.setFeatures(userId, ["create:session", "read:session", "update:user"]);
-    return activatedUser;
+  const activatedUser = await user.setFeatures(userId, [
+    'create:session',
+    'read:session',
+    'update:user',
+  ]);
+  return activatedUser;
 }
 
 async function create(userId) {
-    const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILISECONDS);
+  const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILISECONDS);
 
-    const newToken = await runInsertQuery(userId, expiresAt);
-    return newToken;
+  const newToken = await runInsertQuery(userId, expiresAt);
+  return newToken;
 
-    async function runInsertQuery(userId, expiresAt){
-        const results = await database.query({
-            text: `
+  async function runInsertQuery(userId, expiresAt) {
+    const results = await database.query({
+      text: `
               INSERT INTO
                 user_activation_tokens (user_id, expires_at)
               VALUES
@@ -100,14 +106,14 @@ async function create(userId) {
               RETURNING
                 *
             ;`,
-            values: [userId, expiresAt]
-        })
-        return results[0];
-    }
+      values: [userId, expiresAt],
+    });
+    return results[0];
+  }
 }
 
 async function sendEmailToUser(user, activationToken) {
- await email.send({
+  await email.send({
     from: '<contato@fintab.com.br>',
     to: user.email,
     subject: 'Ative seu cadastro no FinTab!',
@@ -118,16 +124,16 @@ ${webserver.origin}/cadastro/ativar/${activationToken.id}
 Atenciosamente,
 Equipe FinTab
     `,
- })
+  });
 }
 
 const activation = {
-    EXPIRATION_IN_MILISECONDS,
-    findOneValidById,
-    markTokenAsUsed,
-    activateUserByUserId,
-    create,
-    sendEmailToUser,
-}
+  EXPIRATION_IN_MILISECONDS,
+  findOneValidById,
+  markTokenAsUsed,
+  activateUserByUserId,
+  create,
+  sendEmailToUser,
+};
 
-export default activation
+export default activation;

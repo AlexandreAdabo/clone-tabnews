@@ -18,7 +18,11 @@ function onNoMatchHandler(req, res) {
 }
 
 function onErrorHandler(error, req, res) {
-  if (error instanceof ValidationError || error instanceof NotFoundError || error instanceof ForbiddenError) {
+  if (
+    error instanceof ValidationError ||
+    error instanceof NotFoundError ||
+    error instanceof ForbiddenError
+  ) {
     return res.status(error.statusCode).json(error);
   }
 
@@ -55,49 +59,49 @@ async function clearSessionCookie(res) {
 }
 
 async function injectAnonymousOrUser(req, res, next) {
-  if(req.cookies?.session_id) {
+  if (req.cookies?.session_id) {
     await injectAuthenticatedUser(req);
     return next();
   }
-  
+
   injectAnonymousUser(req);
   return next();
 }
 
-async function injectAuthenticatedUser(req){
+async function injectAuthenticatedUser(req) {
   const sessionToken = req.cookies.session_id;
   const sessionObject = await session.findOneValidByToken(sessionToken);
   const userObject = await user.findOneById(sessionObject.user_id);
   req.context = {
     ...req.context,
-    user: userObject
-  }
+    user: userObject,
+  };
 }
 
-async function injectAnonymousUser(req){
+async function injectAnonymousUser(req) {
   const anonymousUserObject = {
-    features: ["read:activation_token", "create:session", "create:user"]
-  }
+    features: ['read:activation_token', 'create:session', 'create:user'],
+  };
 
   req.context = {
     ...req.context,
     user: anonymousUserObject,
-  }
+  };
 }
 
 function canRequest(feature) {
-    return function canRequestMiddleware(req, res, next){
-      const useTryingToRequest = req.context.user;
+  return function canRequestMiddleware(req, res, next) {
+    const useTryingToRequest = req.context.user;
 
-      if(authorization.can(useTryingToRequest, feature)){
-        return next();
-      }
-
-      throw new ForbiddenError({
-        message: "Você não possui permissão para executar esta ação.",
-        action: `Verifique se o seu usuário possui a feature ${feature}`,
-      })
+    if (authorization.can(useTryingToRequest, feature)) {
+      return next();
     }
+
+    throw new ForbiddenError({
+      message: 'Você não possui permissão para executar esta ação.',
+      action: `Verifique se o seu usuário possui a feature ${feature}`,
+    });
+  };
 }
 
 const controller = {

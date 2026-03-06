@@ -5,6 +5,7 @@ import session from 'models/session.js';
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
+  await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
 });
 
@@ -92,12 +93,14 @@ describe('POST /api/v1/sessions', () => {
         password: 'tudo.correto',
       });
 
-      await orchestrator.activateUser(createdUser);
+      const activatedUser = await orchestrator.activateUser(createdUser);
+      const sessionObject = await orchestrator.createSession(activatedUser.id);
 
       const response = await fetch('http://localhost:3000/api/v1/sessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Cookie: `session_id=${sessionObject.token}`,
         },
         body: JSON.stringify({
           email: 'tudo.correto@gmail.com',
@@ -143,4 +146,3 @@ describe('POST /api/v1/sessions', () => {
     });
   });
 });
-
