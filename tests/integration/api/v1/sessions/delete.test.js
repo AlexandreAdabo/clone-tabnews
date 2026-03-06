@@ -7,7 +7,6 @@ beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
-  await orchestrator.truncateTables();
 });
 
 describe('DELETE /api/v1/sessions', () => {
@@ -65,8 +64,8 @@ describe('DELETE /api/v1/sessions', () => {
       const createdUser = await orchestrator.createUser({
         username: 'UserWithValidSession',
       });
-
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const activatedUser = await orchestrator.activateUser(createdUser);
+      const sessionObject = await orchestrator.createSession(activatedUser.id);
 
       const response = await fetch('http://localhost:3000/api/v1/sessions', {
         method: 'DELETE',
@@ -77,6 +76,7 @@ describe('DELETE /api/v1/sessions', () => {
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();
+
       expect(responseBody).toEqual({
         id: sessionObject.id,
         token: sessionObject.token,
