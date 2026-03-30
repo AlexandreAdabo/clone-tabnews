@@ -20,7 +20,7 @@ async function send(mailOptions) {
       action: 'Verifique se o serviço de email está disponível',
       cause: error,
       context: mailOptions,
-    })
+    });
   }
 }
 
