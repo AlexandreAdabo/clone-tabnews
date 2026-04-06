@@ -114,15 +114,15 @@ async function create(userId) {
 
 async function sendEmailToUser(user, activationToken) {
   await email.send({
-    from: '<contato@fintab.com.br>',
+    from: '<contato@busnews.com.br>',
     to: user.email,
-    subject: 'Ative seu cadastro no FinTab!',
-    text: `${user.username}, clique no link abaixo para ativar seu cadastro no FinTab,
+    subject: 'Ative seu cadastro no BusNews!',
+    text: `${user.username}, clique no link abaixo para ativar seu cadastro no BusNews,
     
 ${webserver.origin}/cadastro/ativar/${activationToken.id}
 
 Atenciosamente,
-Equipe FinTab
+Equipe BusNews
     `,
   });
 }
