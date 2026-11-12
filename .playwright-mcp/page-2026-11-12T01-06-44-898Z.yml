@@ -1,0 +1,15 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - heading "Cadastro" [level=1] [ref=e3]
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - text: "Nome do usuário:"
+        - textbox [ref=e6]
+      - generic [ref=e7]:
+        - text: "Email:"
+        - textbox [ref=e8]
+      - generic [ref=e9]:
+        - text: "Senha:"
+        - textbox [ref=e10]
+      - button "Criar cadastro" [ref=e11]
+  - alert [ref=e17]

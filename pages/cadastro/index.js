@@ -1,45 +1,64 @@
 import { useState } from 'react';
+import { Button } from '@primer/react';
 
 export default function RegisterPage() {
   console.log('Render do <RegisterPage />');
 
-  const [newCount, setNewCount] = useState(0);
-  const [items, setItems] = useState([]);
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  function newIncrement() {
-    console.log(`NEW Incrementando count de ${newCount} para ${newCount + 1}`);
-    setNewCount(newCount + 1);
-  }
+  async function handleSubmit(event) {
+    event.preventDefault();
+    console.log('Submit do form', { userName, email, password });
+    const requestBody = { username: userName, email, password };
 
-  function pushNewItem() {
-    const newItem = Math.floor(Math.random() * 1000);
-
-    const newItems = [...items, newItem];
-    console.log('Item: ', items);
-    console.log('New Items: ', newItems);
-    setItems(newItems);
+    const response = await fetch('/api/v1/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (response.status === 201) {
+      location.href = '/cadastro/confirmar';
+      alert('Cadastro realizado com sucesso!');
+    }
   }
 
   return (
     <>
-      <h1>Cadastro de Usuário: </h1>
-      <h1>newCount: {newCount}</h1>
-      <button onClick={newIncrement}>Incrementar (novo)</button>
-      <button onClick={pushNewItem}>Adicionar item</button>
-      <h1>Items: {items.join(', ')}</h1>
-      <hr />
-      <ComponenteA />
-      <ComponenteB />
+      <h1>Cadastro</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Nome do usuário:
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
+        <div>
+          Email:
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          Senha:
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button type="submit">Criar cadastro</button>
+        <Button variant="primary" as="a" href="/login">
+          Criar cadastro
+        </Button>
+      </form>
     </>
   );
-}
-
-function ComponenteA() {
-  console.log('Render do <ComponenteA />');
-  return <h1>ComponenteA</h1>;
-}
-
-function ComponenteB() {
-  console.log('Render do <ComponenteB />');
-  return <h1>ComponenteB</h1>;
 }

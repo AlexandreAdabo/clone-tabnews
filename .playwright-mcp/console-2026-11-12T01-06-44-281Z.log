@@ -1,0 +1,11 @@
+[     401ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom.development.js:29835
+[     451ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3000/cadastro:1
+[     524ms] [LOG] Render do <RegisterPage /> @ webpack-internal:///./pages/cadastro/index.js:14
+[     537ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/dev/error-overlay/hot-dev-client.js:149
+[     917ms] [LOG] [Fast Refresh] done in 380ms @ webpack-internal:///./node_modules/next/dist/client/dev/error-overlay/hot-dev-client.js:125
+[    1020ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:1
+[    4770ms] [LOG] Render do <RegisterPage /> @ webpack-internal:///./pages/cadastro/index.js:14
+[    4792ms] [LOG] Render do <RegisterPage /> @ webpack-internal:///./pages/cadastro/index.js:14
+[    4808ms] [LOG] Render do <RegisterPage /> @ webpack-internal:///./pages/cadastro/index.js:14
+[    5167ms] [LOG] Submit do form {userName: teste1111, email: teste1111@example.com, password: senha123} @ webpack-internal:///./pages/cadastro/index.js:20
+[ 4052823ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom.development.js:29835
