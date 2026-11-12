@@ -41,7 +41,7 @@ describe('GET /api/v1/status', () => {
       expect(data.dependencies.database.max_connections).toBeDefined();
       expect(data.dependencies.database.used_connections).toBeDefined();
 
-      expect(data.dependencies.database.version).toContain('16.12');
+      expect(data.dependencies.database.version).toContain('16.15');
       expect(data.dependencies.database.max_connections).toEqual(901);
       //expect(data.dependencies.database.used_connections).toEqual(1);
       const parsedUpdatedAt = new Date(data.updated_at).toISOString();
