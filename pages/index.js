@@ -1,5 +1,10 @@
 function Home() {
-  return <h1>Ta bem pirulin ? Testing Amend Two</h1>;
+  return (
+    <h1>
+      Menos ruído, mais fundamentos: Um lugar para inteligência coletiva dos
+      investidores
+    </h1>
+  );
 }
 
 console.log('a');
