@@ -1,4 +1,7 @@
+import DefaultLayout from 'interface/DefaultLayout';
 import useSWR from 'swr';
+import { Banner, Heading, Stack } from '@primer/react';
+import { Card } from 'node_modules/@primer/react/dist/Card';
 
 async function fetchAPI(key) {
   const response = await fetch(key);
@@ -8,10 +11,15 @@ async function fetchAPI(key) {
 // swr | react query (TANSTACK)
 export default function StatusPage() {
   return (
-    <>
-      <h1> Status </h1>
-      <UpdatedAt />
-    </>
+    <DefaultLayout
+      contentWidth="medium"
+      metadata={{ title: 'Status', description: 'Página de status do FinTab' }}
+    >
+      <Stack gap="spacious">
+        <Heading as="h1"> Status </Heading>
+        <UpdatedAt />
+      </Stack>
+    </DefaultLayout>
   );
 }
 
@@ -29,7 +37,7 @@ function UpdatedAt() {
   if (!isLoading && data) {
     const { dependencies, updated_at } = data;
     dataObj.updatedAt = new Date(updated_at).toLocaleString('pt-br');
-    dataObj.databaseVersion = dependencies.database.db_version;
+    dataObj.databaseVersion = dependencies.database.db_version || '-';
     dataObj.maxConnections = dependencies.database.max_connections;
     dataObj.openedConnections = dependencies.database.used_connections;
   }
@@ -37,22 +45,46 @@ function UpdatedAt() {
   return (
     <>
       {isLoading ? (
-        <div>Loading ...</div>
+        <div>Carregando ...</div>
       ) : (
-        <table>
-          <tr>
-            <th> UpdatedAt:</th> <td>{dataObj.updatedAt}</td>
-          </tr>
-          <tr>
-            <th> Max Connections:</th> <td>{dataObj.maxConnections}</td>
-          </tr>
-          <tr>
-            <th> Opened Connections:</th> <td>{dataObj.openedConnections}</td>
-          </tr>
-          <tr>
-            <th>Database Version: </th> <td>{dataObj.databaseVersion}</td>
-          </tr>
-        </table>
+        <>
+          <Stack>
+            <Heading as="h2"> Database </Heading>
+            <Stack
+              direction={{ narrow: 'vertical', regular: 'horizontal' }}
+              gap="spacious"
+            >
+              <Stack.Item grow>
+                <Card>
+                  <Card.Heading>Conexões abertas</Card.Heading>
+                  <Card.Description>
+                    {dataObj.openedConnections}
+                  </Card.Description>
+                  <Card.Metadata>Uso neste instante</Card.Metadata>
+                </Card>
+              </Stack.Item>
+
+              <Stack.Item grow>
+                <Card>
+                  <Card.Heading>Conexões máximas</Card.Heading>
+                  <Card.Description>{dataObj.maxConnections}</Card.Description>
+                  <Card.Metadata>Conexões disponíveis</Card.Metadata>
+                </Card>
+              </Stack.Item>
+
+              <Stack.Item grow>
+                <Card>
+                  <Card.Heading>PostgreSQL</Card.Heading>
+                  <Card.Description>{dataObj.databaseVersion}</Card.Description>
+                  <Card.Metadata>Versão do banco de dados</Card.Metadata>
+                </Card>
+              </Stack.Item>
+            </Stack>
+          </Stack>
+          <Banner variant="info" layout="compact">
+            <Banner.Title> UpdatedAt: {dataObj.updatedAt}</Banner.Title>
+          </Banner>
+        </>
       )}
     </>
   );

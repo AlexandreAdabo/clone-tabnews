@@ -2,8 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/cadastro": "pages/cadastro.js",
-  "/cadastro/confirmar": "pages/cadastro/confirmar.js",
-  "/cadastro/ativar/[activationTokenId]": "pages/cadastro/ativar/[activationTokenId].js",
-  "/api/v1/activations/[token_id]": "pages/api/v1/activations/[token_id].js"
+  "/status": "pages/status.js",
+  "/api/v1/status": "pages/api/v1/status.js"
 }

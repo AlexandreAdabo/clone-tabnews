@@ -25,20 +25,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/cadastro": [
+    "/status": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/cadastro.js"
-    ],
-    "/cadastro/ativar/[activationTokenId]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/cadastro/ativar/[activationTokenId].js"
-    ],
-    "/cadastro/confirmar": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/cadastro/confirmar.js"
+      "static/chunks/pages/status.js"
     ]
   },
   "ampFirstPages": []
